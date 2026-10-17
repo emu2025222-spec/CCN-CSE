@@ -312,7 +312,7 @@ export default function App() {
   }
 
   return (
-    <><div className="app-shell">
+    <div className="app-shell">
       <div className="ambient ambient-one" />
       <div className="ambient ambient-two" />
 
@@ -425,7 +425,7 @@ export default function App() {
             onClick={() => {
               setMobileMenuOpen(false);
               setAdminOpen(true);
-            } }
+            }}
           >
             <ShieldCheck size={16} />
             {admin ? 'Admin Dashboard' : 'Admin Login'}
@@ -488,309 +488,290 @@ export default function App() {
               </div>
             </div>
           </div>
-
-          <div className="real-campus-card live-terminal-card">
-            <div className="terminal-titlebar">
-              <div className="terminal-window-dots">
-                <span className="terminal-dot red" />
-                <span className="terminal-dot yellow" />
-                <span className="terminal-dot green" />
+          <div className="live-terminal">
+            <div className="terminal-header">
+              <div className="terminal-dots">
+                <span />
+                <span />
+                <span />
               </div>
-
-              <div className="terminal-window-title">
-                <Terminal size={14} />
-                <span>ccn-cse-hub — terminal</span>
-              </div>
-
-              <span className="terminal-live-badge">
-                <span className="terminal-live-dot" />
-                LIVE
+              <span className="terminal-title">
+                <Terminal size={14} /> ccn-cse-terminal
+              </span>
+              <span className="terminal-status">
+                <span className="status-dot" /> LIVE
               </span>
             </div>
 
-            <div className="terminal-content">
-              <div className="terminal-system-line">
-                <span className="terminal-muted">student@ccn-cse</span>
-                <span className="terminal-symbol"> ~ </span>
-                <span className="terminal-prompt">$</span>
-                <span> ./start-learning.sh</span>
-              </div>
+            <div className="terminal-body">
+              <p>
+                <span className="terminal-prompt">➜</span>{" "}
+                <span className="terminal-command">whoami</span>
+              </p>
+              <p className="terminal-output">CCN UST · CSE · 18th Batch</p>
 
+              <p>
+                <span className="terminal-prompt">➜</span>{" "}
+                <span className="terminal-command">cat mission.txt</span>
+              </p>
               <p className="terminal-output">
-                Initializing CSE workspace...
+                Learn. Practice. Build. Repeat.
+              </p>
+
+              <p>
+                <span className="terminal-prompt">➜</span>{" "}
+                <span className="terminal-command">npm run future</span>
               </p>
               <p className="terminal-success">
-                <span>✓</span> Question library loaded
-              </p>
-              <p className="terminal-success">
-                <span>✓</span> Programming environment ready
-              </p>
-              <p className="terminal-success">
-                <span>✓</span> Semester modules available
+                ✓ Ready to build something amazing.
               </p>
 
-              <div className="terminal-divider" />
-
-              <div className="terminal-code-label">
-                <span>main.cpp</span>
-                <span>C++ · UTF-8</span>
-              </div>
-
-              <pre className="terminal-code"><code><span className="code-purple">#include</span>{" <iostream>\n"}<span className="code-purple">using namespace</span>{" std;\n\n"}<span className="code-blue">int</span>{" main() {\n    "}<span className="code-blue">cout</span>{" << "}<span className="code-green">"Hello, CCN CSE!"</span>{";\n    "}<span className="code-purple">return</span>{" 0;\n}"}</code></pre>
-
-              <div className="terminal-run-line">
-                <span className="terminal-run-icon">▶</span>
-                <span>Program executed successfully</span>
+              <p className="terminal-live-line">
+                <span>student@ccn-cse:~$</span>
                 <span className="terminal-cursor" />
-              </div>
-
-              <div className="terminal-progress-track">
-                <span />
-              </div>
-
-              <div className="terminal-bottom-info">
-                <span><span className="terminal-live-dot" /> SYSTEM ONLINE</span>
-                <span>CCN UST · CSE</span>
-              </div>
-            </div>
-
-            <div className="campus-card-footer terminal-footer">
-              <span>LEARN · CODE · BUILD</span>
-              <span>CCN CSE HUB</span>
+              </p>
             </div>
           </div>
+          <div className="real-campus-card">
+            <div className="campus-card-top">
+              <GraduationCap size={26} />
+              <span>STUDENT STUDY PORTAL</span>
+            </div>
 
-          <div className="campus-card-body">
-            <p className="eyebrow">YOUR ACADEMIC WORKSPACE</p>
-            <h2>Study smarter.<br />Prepare with purpose.</h2>
-            <p>
-              Questions, solutions and programming practice,
-              organized around your semester and course.
-            </p>
+            <div className="campus-card-body">
+              <p className="eyebrow">YOUR ACADEMIC WORKSPACE</p>
+              <h2>Study smarter.<br />Prepare with purpose.</h2>
+              <p>
+                Questions, solutions and programming practice,
+                organized around your semester and course.
+              </p>
 
-            <a href="#library" className="campus-card-link">
-              Explore resources <ArrowUpRight size={17} />
-            </a>
+              <a href="#library" className="campus-card-link">
+                Explore resources <ArrowUpRight size={17} />
+              </a>
+            </div>
+
+            <div className="campus-card-footer">
+              <span>Independent student project</span>
+              <span>CCN · CSE</span>
+            </div>
+          </div>
+        </section>
+
+        <section className="trust-strip real-trust-strip">
+          <span><BookOpen size={17} /> Semester-wise questions</span>
+          <span><Code2 size={17} /> Programming practice</span>
+          <span><ShieldCheck size={17} /> Student-managed resources</span>
+        </section>
+
+        <section className="trust-strip">
+          <span><ShieldCheck size={17} /> Student-focused resources</span>
+          <span><BookOpen size={17} /> Theory · Math · Programming · Lab</span>
+          <span><Sparkles size={17} /> Built for your study flow</span>
+        </section>
+
+        <section id="library" className="library-section">
+          <div className="section-heading">
+            <div>
+              <div className="eyebrow">THE KNOWLEDGE LIBRARY</div>
+              <h2>Find the <span>answer.</span></h2>
+              <p>Search topics, filter by batch, and jump into the solution.</p>
+            </div>
+
+            <div className="count-pill">
+              <span className="count-dot" />
+              {filtered.length} questions found
+            </div>
           </div>
 
-          <div className="campus-card-footer">
-            <span>Independent student project</span>
-            <span>CCN · CSE</span>
-          </div>
-        </div>
-      </section>
-
-      <section className="trust-strip real-trust-strip">
-        <span><BookOpen size={17} /> Semester-wise questions</span>
-        <span><Code2 size={17} /> Programming practice</span>
-        <span><ShieldCheck size={17} /> Student-managed resources</span>
-      </section>
-
-      <section className="trust-strip">
-        <span><ShieldCheck size={17} /> Student-focused resources</span>
-        <span><BookOpen size={17} /> Theory · Math · Programming · Lab</span>
-        <span><Sparkles size={17} /> Built for your study flow</span>
-      </section>
-
-      <section id="library" className="library-section">
-        <div className="section-heading">
-          <div>
-            <div className="eyebrow">THE KNOWLEDGE LIBRARY</div>
-            <h2>Find the <span>answer.</span></h2>
-            <p>Search topics, filter by batch, and jump into the solution.</p>
-          </div>
-
-          <div className="count-pill">
-            <span className="count-dot" />
-            {filtered.length} questions found
-          </div>
-        </div>
-
-        <div className="search-bar">
-          <Search size={20} />
-          <input
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            placeholder="Search questions, subjects, code, keywords..."
-            aria-label="Search questions" />
-          {search && (
-            <button
-              onClick={() => setSearch('')}
-              aria-label="Clear search"
-            >
-              <X size={17} />
-            </button>
-          )}
-        </div>
-
-        <div className="filters">
-          <label>
-            <span>BATCH</span>
-            <select value={batch} onChange={e => setBatch(e.target.value)}>
-              <option value="all">All batches</option>
-              {batches.map(b => <option key={b}>{b}</option>)}
-            </select>
-          </label>
-
-          <label>
-            <span>SEMESTER</span>
-            <select value={semester} onChange={e => setSemester(e.target.value)}>
-              <option value="all">All semesters</option>
-              {semesters.map(s => (
-                <option key={s} value={s}>Semester {s}</option>
-              ))}
-            </select>
-          </label>
-
-          <label>
-            <span>SUBJECT</span>
-            <select value={subject} onChange={e => setSubject(e.target.value)}>
-              <option value="all">All subjects</option>
-              {subjects.map(s => <option key={s}>{s}</option>)}
-            </select>
-          </label>
-
-          <label>
-            <span>QUESTION TYPE</span>
-            <select value={kind} onChange={e => setKind(e.target.value)}>
-              <option value="all">All types</option>
-              {questionTypes.map(k => <option key={k}>{k}</option>)}
-            </select>
-          </label>
-
-          <label>
-            <span>EXAM</span>
-            <select value={exam} onChange={e => setExam(e.target.value)}>
-              <option value="all">All exams</option>
-              {examTypes.map(k => <option key={k}>{k}</option>)}
-            </select>
-          </label>
-
-          <button className="clear-filters" onClick={clearFilters}>
-            <Filter size={15} /> Reset filters
-          </button>
-        </div>
-
-        {loading ? (
-          <div className="empty-state">
-            <div className="loader" />
-            <h3>Opening the library…</h3>
-          </div>
-        ) : error ? (
-          <div className="empty-state">
-            <CircleHelp size={30} />
-            <h3>Library unavailable</h3>
-            <p>{error}</p>
-            <button className="secondary-btn" onClick={loadQuestions}>
-              Try again
-            </button>
-          </div>
-        ) : filtered.length === 0 ? (
-          <div className="empty-state">
-            <div className="empty-icon"><BookOpen size={25} /></div>
-            <h3>
-              {questions.length
-                ? 'No matching questions yet'
-                : 'Your study library starts here.'}
-            </h3>
-            <p>
-              {questions.length
-                ? 'Try another keyword or change the filters.'
-                : 'Questions will appear here once the administrator publishes them.'}
-            </p>
-            {questions.length > 0 && (
-              <button className="secondary-btn" onClick={clearFilters}>
-                Clear all filters
+          <div className="search-bar">
+            <Search size={20} />
+            <input
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search questions, subjects, code, keywords..."
+              aria-label="Search questions"
+            />
+            {search && (
+              <button
+                onClick={() => setSearch('')}
+                aria-label="Clear search"
+              >
+                <X size={17} />
               </button>
             )}
           </div>
-        ) : (
-          <div className="question-grid">
-            {filtered.map((q, i) => (
-              <article
-                className="question-card"
-                key={q._id}
-                style={{ animationDelay: `${Math.min(i, 10) * 45}ms` }}
-                onClick={() => {
-                  setActive(q);
-                  setShowAnswer(true);
-                  setCopied(false);
-                } }
-                tabIndex={0}
-                onKeyDown={e => {
-                  if (e.key === 'Enter') setActive(q);
-                } }
-              >
-                <div className="card-top">
-                  <span className="type-pill">{q.questionType}</span>
-                  <span className="semester-pill">SEM {q.semester}</span>
-                </div>
 
-                <h3>{q.title}</h3>
-                <p>{q.questionText}</p>
+          <div className="filters">
+            <label>
+              <span>BATCH</span>
+              <select value={batch} onChange={e => setBatch(e.target.value)}>
+                <option value="all">All batches</option>
+                {batches.map(b => <option key={b}>{b}</option>)}
+              </select>
+            </label>
 
-                <div className="card-subject">
-                  <span>{q.subject}</span>
-                  <span>·</span>
-                  <span>{q.examType}</span>
-                </div>
+            <label>
+              <span>SEMESTER</span>
+              <select value={semester} onChange={e => setSemester(e.target.value)}>
+                <option value="all">All semesters</option>
+                {semesters.map(s => (
+                  <option key={s} value={s}>Semester {s}</option>
+                ))}
+              </select>
+            </label>
 
-                {q.courseCode && (
-                  <div className="course-code-label">{q.courseCode}</div>
-                )}
+            <label>
+              <span>SUBJECT</span>
+              <select value={subject} onChange={e => setSubject(e.target.value)}>
+                <option value="all">All subjects</option>
+                {subjects.map(s => <option key={s}>{s}</option>)}
+              </select>
+            </label>
 
-                <div className="card-footer">
-                  <span>Explore solution</span>
-                  <span className="card-arrow">
-                    <ArrowUpRight size={17} />
-                  </span>
-                </div>
-              </article>
-            ))}
+            <label>
+              <span>QUESTION TYPE</span>
+              <select value={kind} onChange={e => setKind(e.target.value)}>
+                <option value="all">All types</option>
+                {questionTypes.map(k => <option key={k}>{k}</option>)}
+              </select>
+            </label>
+
+            <label>
+              <span>EXAM</span>
+              <select value={exam} onChange={e => setExam(e.target.value)}>
+                <option value="all">All exams</option>
+                {examTypes.map(k => <option key={k}>{k}</option>)}
+              </select>
+            </label>
+
+            <button className="clear-filters" onClick={clearFilters}>
+              <Filter size={15} /> Reset filters
+            </button>
           </div>
-        )}
-      </section>
 
-      <section className="study-banner">
-        <div className="banner-icon"><Sparkles size={25} /></div>
+          {loading ? (
+            <div className="empty-state">
+              <div className="loader" />
+              <h3>Opening the library…</h3>
+            </div>
+          ) : error ? (
+            <div className="empty-state">
+              <CircleHelp size={30} />
+              <h3>Library unavailable</h3>
+              <p>{error}</p>
+              <button className="secondary-btn" onClick={loadQuestions}>
+                Try again
+              </button>
+            </div>
+          ) : filtered.length === 0 ? (
+            <div className="empty-state">
+              <div className="empty-icon"><BookOpen size={25} /></div>
+              <h3>
+                {questions.length
+                  ? 'No matching questions yet'
+                  : 'Your study library starts here.'}
+              </h3>
+              <p>
+                {questions.length
+                  ? 'Try another keyword or change the filters.'
+                  : 'Questions will appear here once the administrator publishes them.'}
+              </p>
+              {questions.length > 0 && (
+                <button className="secondary-btn" onClick={clearFilters}>
+                  Clear all filters
+                </button>
+              )}
+            </div>
+          ) : (
+            <div className="question-grid">
+              {filtered.map((q, i) => (
+                <article
+                  className="question-card"
+                  key={q._id}
+                  style={{ animationDelay: `${Math.min(i, 10) * 45}ms` }}
+                  onClick={() => {
+                    setActive(q);
+                    setShowAnswer(true);
+                    setCopied(false);
+                  }}
+                  tabIndex={0}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') setActive(q);
+                  }}
+                >
+                  <div className="card-top">
+                    <span className="type-pill">{q.questionType}</span>
+                    <span className="semester-pill">SEM {q.semester}</span>
+                  </div>
 
-        <div>
-          <div className="eyebrow">SMALL STEPS. BIG PROGRESS.</div>
-          <h2>Understand it. Practice it. <span>Own it.</span></h2>
-          <p>Build a stronger foundation, one question at a time.</p>
-        </div>
+                  <h3>{q.title}</h3>
+                  <p>{q.questionText}</p>
 
-        <a href="#library" className="banner-link">
-          Start learning <ArrowUpRight size={16} />
-        </a>
-      </section>
+                  <div className="card-subject">
+                    <span>{q.subject}</span>
+                    <span>·</span>
+                    <span>{q.examType}</span>
+                  </div>
 
-      <section id="about" className="about-section">
-        <div className="about-emblem">
-          <GraduationCap size={32} />
-        </div>
+                  {q.courseCode && (
+                    <div className="course-code-label">{q.courseCode}</div>
+                  )}
 
-        <div className="about-copy">
-          <div className="eyebrow">MADE FOR OUR LEARNING COMMUNITY</div>
-          <h2>Built by a student, <span>for students.</span></h2>
-          <p>
-            CCN CSE HUB is a student-led study resource for organizing questions
-            and helpful answers across semesters. Verify course titles and
-            materials against official university sources.
-          </p>
-        </div>
+                  <div className="card-footer">
+                    <span>Explore solution</span>
+                    <span className="card-arrow">
+                      <ArrowUpRight size={17} />
+                    </span>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+        </section>
 
-        <div className="founder-card">
-          <div className="founder-avatar">EI</div>
+        <section className="study-banner">
+          <div className="banner-icon"><Sparkles size={25} /></div>
+
           <div>
-            <small>DEVELOPER</small>
-            <h3>Emon Islam</h3>
-            <p>CSE · 18th Batch</p>
-            <span>CCN UST</span>
+            <div className="eyebrow">SMALL STEPS. BIG PROGRESS.</div>
+            <h2>Understand it. Practice it. <span>Own it.</span></h2>
+            <p>Build a stronger foundation, one question at a time.</p>
           </div>
-        </div>
-      </section>
-    </main><footer>
+
+          <a href="#library" className="banner-link">
+            Start learning <ArrowUpRight size={16} />
+          </a>
+        </section>
+
+        <section id="about" className="about-section">
+          <div className="about-emblem">
+            <GraduationCap size={32} />
+          </div>
+
+          <div className="about-copy">
+            <div className="eyebrow">MADE FOR OUR LEARNING COMMUNITY</div>
+            <h2>Built by a student, <span>for students.</span></h2>
+            <p>
+              CCN CSE HUB is a student-led study resource for organizing questions
+              and helpful answers across semesters. Verify course titles and
+              materials against official university sources.
+            </p>
+          </div>
+
+          <div className="founder-card">
+            <div className="founder-avatar">EI</div>
+            <div>
+              <small>DEVELOPER</small>
+              <h3>Emon Islam</h3>
+              <p>CSE · 18th Batch</p>
+              <span>CCN UST</span>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer>
         <a className="brand footer-brand" href="#top">
           <span className="brand-mark">
             <GraduationCap size={19} />
@@ -806,7 +787,7 @@ export default function App() {
         </p>
 
         <span>© {new Date().getFullYear()} Emon Islam</span>
-      </footer></>
+      </footer>
 
       {active && (
         <div

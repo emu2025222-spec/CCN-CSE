@@ -1180,3 +1180,278 @@ footer,
     padding-right: 12px;
   }
 }
+/* =========================================
+   CCN CSE HUB — LIVE CYBER THEME
+   ========================================= */
+
+.app-shell {
+  position: relative;
+  isolation: isolate;
+  background-image:
+    linear-gradient(rgba(42, 132, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(42, 132, 255, 0.035) 1px, transparent 1px),
+    radial-gradient(ellipse at 15% 10%, rgba(0, 153, 255, 0.12), transparent 38%),
+    radial-gradient(ellipse at 85% 30%, rgba(0, 255, 200, 0.055), transparent 35%);
+  background-size: 36px 36px, 36px 36px, auto, auto;
+  background-position: 0 0, 0 0, center, center;
+}
+
+.real-hero {
+  position: relative;
+}
+
+.hero-copy .eyebrow {
+  color: #63d7ff;
+  letter-spacing: 2px;
+}
+
+.hero-copy h1 span,
+.library-section .section-heading h2 span,
+.study-banner h2 span,
+.about-copy h2 span {
+  color: #58c9ff;
+  text-shadow: 0 0 24px rgba(45, 177, 255, 0.2);
+}
+
+.real-campus-card,
+.question-card,
+.search-bar,
+.filters,
+.study-banner,
+.about-section {
+  border-color: rgba(85, 174, 255, 0.19);
+}
+
+.real-campus-card {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at top right, rgba(0, 183, 255, 0.13), transparent 55%),
+    rgba(10, 20, 37, 0.88);
+  box-shadow: 0 20px 70px rgba(0, 0, 0, 0.18);
+}
+
+.real-campus-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #55d9ff, transparent);
+  animation: cyber-scan 6s linear infinite;
+}
+
+.live-terminal {
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto 24px;
+  overflow: hidden;
+  border: 1px solid rgba(70, 191, 255, 0.32);
+  border-radius: 16px;
+  background: rgba(3, 11, 23, 0.94);
+  box-shadow:
+    0 0 35px rgba(0, 140, 255, 0.09),
+    inset 0 0 25px rgba(0, 140, 255, 0.025);
+  font-family: "Space Grotesk", monospace;
+}
+
+.terminal-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 45px;
+  padding: 0 14px;
+  border-bottom: 1px solid rgba(85, 174, 255, 0.17);
+  background: rgba(25, 44, 68, 0.55);
+}
+
+.terminal-dots {
+  display: flex;
+  gap: 5px;
+}
+
+.terminal-dots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ff647c;
+}
+
+.terminal-dots span:nth-child(2) {
+  background: #ffd166;
+}
+
+.terminal-dots span:nth-child(3) {
+  background: #35e6a5;
+}
+
+.terminal-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #a8bfd9;
+  font-size: 11px;
+}
+
+.terminal-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  color: #55e6b1;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #55e6b1;
+  box-shadow: 0 0 10px #55e6b1;
+  animation: status-pulse 1.6s ease-in-out infinite;
+}
+
+.terminal-body {
+  padding: 18px;
+  color: #d9e8fa;
+  font-size: 12px;
+  line-height: 1.9;
+}
+
+.terminal-body p {
+  margin: 0 0 5px;
+  overflow-wrap: anywhere;
+}
+
+.terminal-prompt {
+  color: #55e6b1;
+}
+
+.terminal-command {
+  color: #65ccff;
+}
+
+.terminal-output {
+  padding-left: 17px;
+  color: #8da6c3;
+}
+
+.terminal-success {
+  padding-left: 17px;
+  color: #55e6b1;
+}
+
+.terminal-live-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px !important;
+  color: #55e6b1;
+}
+
+.terminal-cursor {
+  display: inline-block;
+  width: 7px;
+  height: 15px;
+  background: #55d9ff;
+  box-shadow: 0 0 10px rgba(85, 217, 255, 0.55);
+  animation: cursor-blink 1s steps(2, start) infinite;
+}
+
+.question-card {
+  transition:
+    transform 220ms ease,
+    border-color 220ms ease,
+    box-shadow 220ms ease;
+}
+
+.question-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(80, 202, 255, 0.48);
+  box-shadow: 0 12px 32px rgba(0, 123, 255, 0.1);
+}
+
+.search-bar:focus-within {
+  border-color: rgba(85, 205, 255, 0.6);
+  box-shadow: 0 0 0 3px rgba(50, 165, 255, 0.08);
+}
+
+.primary-btn {
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.primary-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(35, 155, 255, 0.2);
+}
+
+@keyframes cursor-blink {
+  to {
+    visibility: hidden;
+  }
+}
+
+@keyframes status-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+@keyframes cyber-scan {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 150%;
+  }
+}
+
+@media (min-width: 900px) {
+  .real-hero {
+    align-items: center;
+  }
+
+  .live-terminal {
+    margin-top: 26px;
+  }
+}
+
+@media (max-width: 680px) {
+  .live-terminal {
+    margin-top: 22px;
+    margin-bottom: 18px;
+    border-radius: 12px;
+  }
+
+  .terminal-body {
+    padding: 14px;
+    font-size: 11px;
+  }
+
+  .terminal-header {
+    padding: 0 11px;
+  }
+
+  .question-card:hover {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .terminal-cursor,
+  .status-dot,
+  .real-campus-card::after {
+    animation: none !important;
+  }
+
+  .question-card,
+  .primary-btn {
+    transition: none !important;
+  }
+}
