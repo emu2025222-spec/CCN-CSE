@@ -1,11 +1,10 @@
-
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import {
   BookOpen, Search, ShieldCheck, Sparkles, GraduationCap, Code2,
   X, Plus, Pencil, Trash2, LogOut, Eye, EyeOff, Layers3,
   CircleHelp, ArrowUpRight, Copy, Check, Filter, Terminal,
-  ChevronRight
+  ChevronRight, Menu
 } from 'lucide-react';
 
 const API = (
@@ -83,6 +82,7 @@ const blank: QuestionForm = {
 const semesters = [1, 2, 3, 4, 5, 6, 7, 8];
 const examTypes = ['CT', 'Midterm', 'Final', 'Lab', 'Assignment', 'Other'];
 const questionTypes = ['Theory', 'Math', 'Programming', 'Lab', 'MCQ', 'Other'];
+
 const languages = [
   ['none', 'Not applicable'],
   ['c', 'C'],
@@ -107,6 +107,7 @@ export default function App() {
   const [error, setError] = useState('');
   const [active, setActive] = useState<Q | null>(null);
   const [adminOpen, setAdminOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [admin, setAdmin] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -136,6 +137,7 @@ export default function App() {
     try {
       await http.get('/auth/me');
       setAdmin(true);
+
       const response = await http.get('/admin/questions');
       setAdminQuestions(Array.isArray(response.data) ? response.data : []);
     } catch {
@@ -152,21 +154,31 @@ export default function App() {
 
   const batches = useMemo(
     () => Array.from(new Set([
-      '17th Batch', '18th Batch', '19th Batch',
+      '17th Batch',
+      '18th Batch',
+      '19th Batch',
       ...questions.map(q => q.batch).filter((v): v is string => Boolean(v))
     ])).sort(),
     [questions]
   );
 
   const subjects = useMemo(
-    () => Array.from(new Set(questions.map(q => q.subject).filter(Boolean))).sort(),
+    () => Array.from(new Set(
+      questions.map(q => q.subject).filter(Boolean)
+    )).sort(),
     [questions]
   );
 
   const filtered = useMemo(() => questions.filter(q => {
     const text = [
-      q.title, q.questionText, q.answer, q.subject, q.courseCode,
-      q.code, q.explanation, ...(q.tags || [])
+      q.title,
+      q.questionText,
+      q.answer,
+      q.subject,
+      q.courseCode,
+      q.code,
+      q.explanation,
+      ...(q.tags || [])
     ].join(' ').toLowerCase();
 
     return (
@@ -196,6 +208,7 @@ export default function App() {
       await http.post('/auth/login', { email, password });
       setAdmin(true);
       setPassword('');
+
       const response = await http.get('/admin/questions');
       setAdminQuestions(Array.isArray(response.data) ? response.data : []);
     } catch {
@@ -244,7 +257,10 @@ export default function App() {
       ...form,
       semester: Number(form.semester),
       tags: form.tags.split(',').map(t => t.trim()).filter(Boolean),
-      solutionSteps: form.solutionSteps.split('\n').map(s => s.trim()).filter(Boolean)
+      solutionSteps: form.solutionSteps
+        .split('\n')
+        .map(s => s.trim())
+        .filter(Boolean)
     };
 
     try {
@@ -276,7 +292,10 @@ export default function App() {
       await http.delete(`/admin/questions/${id}`);
       setAdminQuestions(previous => previous.filter(q => q._id !== id));
       await loadQuestions();
-      if (active?._id === id) setActive(null);
+
+      if (active?._id === id) {
+        setActive(null);
+      }
     } catch {
       alert('Could not delete question.');
     }
@@ -293,23 +312,121 @@ export default function App() {
   }
 
   return (
-    <div className="app-shell">
+    <><div className="app-shell">
       <div className="ambient ambient-one" />
       <div className="ambient ambient-two" />
 
+      <style>{`
+        .mobile-menu-toggle {
+          display: none;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          min-width: 42px;
+          min-height: 42px;
+          padding: 9px 11px;
+          border: 1px solid var(--line);
+          border-radius: 10px;
+          background: #ffffff08;
+          color: #eef2f8;
+          cursor: pointer;
+        }
+
+        .mobile-menu-toggle svg {
+          flex-shrink: 0;
+        }
+
+        @media (max-width: 680px) {
+          .topbar {
+            flex-wrap: wrap;
+          }
+
+          .mobile-menu-toggle {
+            display: inline-flex;
+            margin-left: auto;
+          }
+
+          .topbar nav.mobile-nav {
+            display: none;
+            width: 100%;
+            flex-basis: 100%;
+            align-items: stretch;
+            flex-direction: column;
+            gap: 7px;
+            padding: 10px 0 3px;
+          }
+
+          .topbar nav.mobile-nav.mobile-nav-open {
+            display: flex !important;
+          }
+
+          .topbar nav.mobile-nav > a {
+            display: flex !important;
+            align-items: center;
+            min-height: 42px;
+            padding: 10px 12px;
+            border: 1px solid var(--line);
+            border-radius: 9px;
+            background: #ffffff05;
+            font-size: 12px;
+          }
+
+          .topbar nav.mobile-nav .admin-trigger {
+            justify-content: center;
+            min-height: 42px;
+            width: 100%;
+          }
+        }
+      `}</style>
+
       <header className="topbar">
-        <a className="brand" href="#top">
-          <span className="brand-mark"><GraduationCap size={23} /></span>
+        <a
+          className="brand"
+          href="#top"
+          onClick={() => setMobileMenuOpen(false)}
+        >
+          <span className="brand-mark">
+            <GraduationCap size={23} />
+          </span>
           <span>
             <b>CCN-UST <i>CSE</i> HUB</b>
             <small>LEARN · PRACTICE · ACHIEVE</small>
           </span>
         </a>
 
-        <nav>
-          <a href="#library">Question Library</a>
-          <a href="#about">About</a>
-          <button className="admin-trigger" onClick={() => setAdminOpen(true)}>
+        <button
+          type="button"
+          className="mobile-menu-toggle"
+          aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+          aria-expanded={mobileMenuOpen}
+          onClick={() => setMobileMenuOpen(open => !open)}
+        >
+          {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+          <span>{mobileMenuOpen ? 'Close' : 'Menu'}</span>
+        </button>
+
+        <nav className={`mobile-nav ${mobileMenuOpen ? 'mobile-nav-open' : ''}`}>
+          <a
+            href="#library"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            Question Library
+          </a>
+
+          <a
+            href="#about"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            About
+          </a>
+
+          <button
+            className="admin-trigger"
+            onClick={() => {
+              setMobileMenuOpen(false);
+              setAdminOpen(true);
+            } }
+          >
             <ShieldCheck size={16} />
             {admin ? 'Admin Dashboard' : 'Admin Login'}
           </button>
@@ -317,14 +434,15 @@ export default function App() {
       </header>
 
       <main id="top">
-
         <section className="hero real-hero">
           <div className="hero-copy">
             <div className="eyebrow">
               CCN UNIVERSITY OF SCIENCE & TECHNOLOGY
             </div>
 
-            <p className="real-location">KOTBARI, CUMILLA, BANGLADESH</p>
+            <p className="real-location">
+              KOTBARI, CUMILLA, BANGLADESH
+            </p>
 
             <h1>
               CCN CSE <span>HUB</span>
@@ -371,289 +489,566 @@ export default function App() {
             </div>
           </div>
 
-          <div className="real-campus-card">
-            <div className="campus-card-top">
-              <GraduationCap size={26} />
-              <span>STUDENT STUDY PORTAL</span>
+          <div className="real-campus-card live-terminal-card">
+            <div className="terminal-titlebar">
+              <div className="terminal-window-dots">
+                <span className="terminal-dot red" />
+                <span className="terminal-dot yellow" />
+                <span className="terminal-dot green" />
+              </div>
+
+              <div className="terminal-window-title">
+                <Terminal size={14} />
+                <span>ccn-cse-hub — terminal</span>
+              </div>
+
+              <span className="terminal-live-badge">
+                <span className="terminal-live-dot" />
+                LIVE
+              </span>
             </div>
 
-            <div className="campus-card-body">
-              <p className="eyebrow">YOUR ACADEMIC WORKSPACE</p>
-              <h2>Study smarter.<br />Prepare with purpose.</h2>
-              <p>
-                Questions, solutions and programming practice,
-                organized around your semester and course.
+            <div className="terminal-content">
+              <div className="terminal-system-line">
+                <span className="terminal-muted">student@ccn-cse</span>
+                <span className="terminal-symbol"> ~ </span>
+                <span className="terminal-prompt">$</span>
+                <span> ./start-learning.sh</span>
+              </div>
+
+              <p className="terminal-output">
+                Initializing CSE workspace...
+              </p>
+              <p className="terminal-success">
+                <span>✓</span> Question library loaded
+              </p>
+              <p className="terminal-success">
+                <span>✓</span> Programming environment ready
+              </p>
+              <p className="terminal-success">
+                <span>✓</span> Semester modules available
               </p>
 
-              <a href="#library" className="campus-card-link">
-                Explore resources <ArrowUpRight size={17} />
-              </a>
+              <div className="terminal-divider" />
+
+              <div className="terminal-code-label">
+                <span>main.cpp</span>
+                <span>C++ · UTF-8</span>
+              </div>
+
+              <pre className="terminal-code"><code><span className="code-purple">#include</span>{" <iostream>\n"}<span className="code-purple">using namespace</span>{" std;\n\n"}<span className="code-blue">int</span>{" main() {\n    "}<span className="code-blue">cout</span>{" << "}<span className="code-green">"Hello, CCN CSE!"</span>{";\n    "}<span className="code-purple">return</span>{" 0;\n}"}</code></pre>
+
+              <div className="terminal-run-line">
+                <span className="terminal-run-icon">▶</span>
+                <span>Program executed successfully</span>
+                <span className="terminal-cursor" />
+              </div>
+
+              <div className="terminal-progress-track">
+                <span />
+              </div>
+
+              <div className="terminal-bottom-info">
+                <span><span className="terminal-live-dot" /> SYSTEM ONLINE</span>
+                <span>CCN UST · CSE</span>
+              </div>
             </div>
 
-            <div className="campus-card-footer">
-              <span>Independent student project</span>
-              <span>CCN · CSE</span>
+            <div className="campus-card-footer terminal-footer">
+              <span>LEARN · CODE · BUILD</span>
+              <span>CCN CSE HUB</span>
             </div>
           </div>
-        </section>
 
-        <section className="trust-strip real-trust-strip">
-          <span><BookOpen size={17} /> Semester-wise questions</span>
-          <span><Code2 size={17} /> Programming practice</span>
-          <span><ShieldCheck size={17} /> Student-managed resources</span>
-        </section>
-
-
-        <section className="trust-strip">
-          <span><ShieldCheck size={17} /> Student-focused resources</span>
-          <span><BookOpen size={17} /> Theory · Math · Programming · Lab</span>
-          <span><Sparkles size={17} /> Built for your study flow</span>
-        </section>
-
-        <section id="library" className="library-section">
-          <div className="section-heading">
-            <div>
-              <div className="eyebrow">THE KNOWLEDGE LIBRARY</div>
-              <h2>Find the <span>answer.</span></h2>
-              <p>Search topics, filter by batch, and jump into the solution.</p>
-            </div>
-            <div className="count-pill"><span className="count-dot" />{filtered.length} questions found</div>
-          </div>
-
-          <div className="search-bar">
-            <Search size={20} />
-            <input
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              placeholder="Search questions, subjects, code, keywords..."
-              aria-label="Search questions"
-            />
-            {search && <button onClick={() => setSearch('')} aria-label="Clear search"><X size={17} /></button>}
-          </div>
-
-          <div className="filters">
-            <label><span>BATCH</span>
-              <select value={batch} onChange={e => setBatch(e.target.value)}>
-                <option value="all">All batches</option>
-                {batches.map(b => <option key={b}>{b}</option>)}
-              </select>
-            </label>
-            <label><span>SEMESTER</span>
-              <select value={semester} onChange={e => setSemester(e.target.value)}>
-                <option value="all">All semesters</option>
-                {semesters.map(s => <option key={s} value={s}>Semester {s}</option>)}
-              </select>
-            </label>
-            <label><span>SUBJECT</span>
-              <select value={subject} onChange={e => setSubject(e.target.value)}>
-                <option value="all">All subjects</option>
-                {subjects.map(s => <option key={s}>{s}</option>)}
-              </select>
-            </label>
-            <label><span>QUESTION TYPE</span>
-              <select value={kind} onChange={e => setKind(e.target.value)}>
-                <option value="all">All types</option>
-                {questionTypes.map(k => <option key={k}>{k}</option>)}
-              </select>
-            </label>
-            <label><span>EXAM</span>
-              <select value={exam} onChange={e => setExam(e.target.value)}>
-                <option value="all">All exams</option>
-                {examTypes.map(k => <option key={k}>{k}</option>)}
-              </select>
-            </label>
-            <button className="clear-filters" onClick={clearFilters}><Filter size={15} /> Reset filters</button>
-          </div>
-
-          {loading ? (
-            <div className="empty-state"><div className="loader" /><h3>Opening the library…</h3></div>
-          ) : error ? (
-            <div className="empty-state">
-              <CircleHelp size={30} /><h3>Library unavailable</h3><p>{error}</p>
-              <button className="secondary-btn" onClick={loadQuestions}>Try again</button>
-            </div>
-          ) : filtered.length === 0 ? (
-            <div className="empty-state">
-              <div className="empty-icon"><BookOpen size={25} /></div>
-              <h3>{questions.length ? 'No matching questions yet' : 'Your study library starts here.'}</h3>
-              <p>{questions.length ? 'Try another keyword or change the filters.' : 'Questions will appear here once the administrator publishes them.'}</p>
-              {questions.length > 0 && <button className="secondary-btn" onClick={clearFilters}>Clear all filters</button>}
-            </div>
-          ) : (
-            <div className="question-grid">
-              {filtered.map((q, i) => (
-                <article
-                  className="question-card"
-                  key={q._id}
-                  style={{ animationDelay: `${Math.min(i, 10) * 45}ms` }}
-                  onClick={() => { setActive(q); setShowAnswer(true); setCopied(false); }}
-                  tabIndex={0}
-                  onKeyDown={e => { if (e.key === 'Enter') setActive(q); }}
-                >
-                  <div className="card-top">
-                    <span className="type-pill">{q.questionType}</span>
-                    <span className="semester-pill">SEM {q.semester}</span>
-                  </div>
-                  <h3>{q.title}</h3>
-                  <p>{q.questionText}</p>
-                  <div className="card-subject">
-                    <span>{q.subject}</span><span>·</span><span>{q.examType}</span>
-                  </div>
-                  {q.courseCode && <div className="course-code-label">{q.courseCode}</div>}
-                  <div className="card-footer">
-                    <span>Explore solution</span>
-                    <span className="card-arrow"><ArrowUpRight size={17} /></span>
-                  </div>
-                </article>
-              ))}
-            </div>
-          )}
-        </section>
-
-        <section className="study-banner">
-          <div className="banner-icon"><Sparkles size={25} /></div>
-          <div>
-            <div className="eyebrow">SMALL STEPS. BIG PROGRESS.</div>
-            <h2>Understand it. Practice it. <span>Own it.</span></h2>
-            <p>Build a stronger foundation, one question at a time.</p>
-          </div>
-          <a href="#library" className="banner-link">Start learning <ArrowUpRight size={16} /></a>
-        </section>
-
-        <section id="about" className="about-section">
-          <div className="about-emblem"><GraduationCap size={32} /></div>
-          <div className="about-copy">
-            <div className="eyebrow">MADE FOR OUR LEARNING COMMUNITY</div>
-            <h2>Built by a student, <span>for students.</span></h2>
+          <div className="campus-card-body">
+            <p className="eyebrow">YOUR ACADEMIC WORKSPACE</p>
+            <h2>Study smarter.<br />Prepare with purpose.</h2>
             <p>
-              CCN CSE HUB is a student-led study resource for organizing questions
-              and helpful answers across semesters. Verify course titles and
-              materials against official university sources.
+              Questions, solutions and programming practice,
+              organized around your semester and course.
             </p>
-          </div>
-          <div className="founder-card">
-            <div className="founder-avatar">EI</div>
-            <div><small>DEVELOPER</small><h3>Emon Islam</h3><p>CSE · 18th Batch</p><span>CCN UST</span></div>
-          </div>
-        </section>
-      </main>
 
-      <footer>
-        <a className="brand footer-brand" href="#top">
-          <span className="brand-mark"><GraduationCap size={19} /></span>
-          <span><b>CCN <i>CSE</i> HUB</b><small>LEARN · PRACTICE · ACHIEVE</small></span>
+            <a href="#library" className="campus-card-link">
+              Explore resources <ArrowUpRight size={17} />
+            </a>
+          </div>
+
+          <div className="campus-card-footer">
+            <span>Independent student project</span>
+            <span>CCN · CSE</span>
+          </div>
+        </div>
+      </section>
+
+      <section className="trust-strip real-trust-strip">
+        <span><BookOpen size={17} /> Semester-wise questions</span>
+        <span><Code2 size={17} /> Programming practice</span>
+        <span><ShieldCheck size={17} /> Student-managed resources</span>
+      </section>
+
+      <section className="trust-strip">
+        <span><ShieldCheck size={17} /> Student-focused resources</span>
+        <span><BookOpen size={17} /> Theory · Math · Programming · Lab</span>
+        <span><Sparkles size={17} /> Built for your study flow</span>
+      </section>
+
+      <section id="library" className="library-section">
+        <div className="section-heading">
+          <div>
+            <div className="eyebrow">THE KNOWLEDGE LIBRARY</div>
+            <h2>Find the <span>answer.</span></h2>
+            <p>Search topics, filter by batch, and jump into the solution.</p>
+          </div>
+
+          <div className="count-pill">
+            <span className="count-dot" />
+            {filtered.length} questions found
+          </div>
+        </div>
+
+        <div className="search-bar">
+          <Search size={20} />
+          <input
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Search questions, subjects, code, keywords..."
+            aria-label="Search questions" />
+          {search && (
+            <button
+              onClick={() => setSearch('')}
+              aria-label="Clear search"
+            >
+              <X size={17} />
+            </button>
+          )}
+        </div>
+
+        <div className="filters">
+          <label>
+            <span>BATCH</span>
+            <select value={batch} onChange={e => setBatch(e.target.value)}>
+              <option value="all">All batches</option>
+              {batches.map(b => <option key={b}>{b}</option>)}
+            </select>
+          </label>
+
+          <label>
+            <span>SEMESTER</span>
+            <select value={semester} onChange={e => setSemester(e.target.value)}>
+              <option value="all">All semesters</option>
+              {semesters.map(s => (
+                <option key={s} value={s}>Semester {s}</option>
+              ))}
+            </select>
+          </label>
+
+          <label>
+            <span>SUBJECT</span>
+            <select value={subject} onChange={e => setSubject(e.target.value)}>
+              <option value="all">All subjects</option>
+              {subjects.map(s => <option key={s}>{s}</option>)}
+            </select>
+          </label>
+
+          <label>
+            <span>QUESTION TYPE</span>
+            <select value={kind} onChange={e => setKind(e.target.value)}>
+              <option value="all">All types</option>
+              {questionTypes.map(k => <option key={k}>{k}</option>)}
+            </select>
+          </label>
+
+          <label>
+            <span>EXAM</span>
+            <select value={exam} onChange={e => setExam(e.target.value)}>
+              <option value="all">All exams</option>
+              {examTypes.map(k => <option key={k}>{k}</option>)}
+            </select>
+          </label>
+
+          <button className="clear-filters" onClick={clearFilters}>
+            <Filter size={15} /> Reset filters
+          </button>
+        </div>
+
+        {loading ? (
+          <div className="empty-state">
+            <div className="loader" />
+            <h3>Opening the library…</h3>
+          </div>
+        ) : error ? (
+          <div className="empty-state">
+            <CircleHelp size={30} />
+            <h3>Library unavailable</h3>
+            <p>{error}</p>
+            <button className="secondary-btn" onClick={loadQuestions}>
+              Try again
+            </button>
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="empty-state">
+            <div className="empty-icon"><BookOpen size={25} /></div>
+            <h3>
+              {questions.length
+                ? 'No matching questions yet'
+                : 'Your study library starts here.'}
+            </h3>
+            <p>
+              {questions.length
+                ? 'Try another keyword or change the filters.'
+                : 'Questions will appear here once the administrator publishes them.'}
+            </p>
+            {questions.length > 0 && (
+              <button className="secondary-btn" onClick={clearFilters}>
+                Clear all filters
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="question-grid">
+            {filtered.map((q, i) => (
+              <article
+                className="question-card"
+                key={q._id}
+                style={{ animationDelay: `${Math.min(i, 10) * 45}ms` }}
+                onClick={() => {
+                  setActive(q);
+                  setShowAnswer(true);
+                  setCopied(false);
+                } }
+                tabIndex={0}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') setActive(q);
+                } }
+              >
+                <div className="card-top">
+                  <span className="type-pill">{q.questionType}</span>
+                  <span className="semester-pill">SEM {q.semester}</span>
+                </div>
+
+                <h3>{q.title}</h3>
+                <p>{q.questionText}</p>
+
+                <div className="card-subject">
+                  <span>{q.subject}</span>
+                  <span>·</span>
+                  <span>{q.examType}</span>
+                </div>
+
+                {q.courseCode && (
+                  <div className="course-code-label">{q.courseCode}</div>
+                )}
+
+                <div className="card-footer">
+                  <span>Explore solution</span>
+                  <span className="card-arrow">
+                    <ArrowUpRight size={17} />
+                  </span>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </section>
+
+      <section className="study-banner">
+        <div className="banner-icon"><Sparkles size={25} /></div>
+
+        <div>
+          <div className="eyebrow">SMALL STEPS. BIG PROGRESS.</div>
+          <h2>Understand it. Practice it. <span>Own it.</span></h2>
+          <p>Build a stronger foundation, one question at a time.</p>
+        </div>
+
+        <a href="#library" className="banner-link">
+          Start learning <ArrowUpRight size={16} />
         </a>
-        <p>Independent student learning resource · Not an official university website.</p>
+      </section>
+
+      <section id="about" className="about-section">
+        <div className="about-emblem">
+          <GraduationCap size={32} />
+        </div>
+
+        <div className="about-copy">
+          <div className="eyebrow">MADE FOR OUR LEARNING COMMUNITY</div>
+          <h2>Built by a student, <span>for students.</span></h2>
+          <p>
+            CCN CSE HUB is a student-led study resource for organizing questions
+            and helpful answers across semesters. Verify course titles and
+            materials against official university sources.
+          </p>
+        </div>
+
+        <div className="founder-card">
+          <div className="founder-avatar">EI</div>
+          <div>
+            <small>DEVELOPER</small>
+            <h3>Emon Islam</h3>
+            <p>CSE · 18th Batch</p>
+            <span>CCN UST</span>
+          </div>
+        </div>
+      </section>
+    </main><footer>
+        <a className="brand footer-brand" href="#top">
+          <span className="brand-mark">
+            <GraduationCap size={19} />
+          </span>
+          <span>
+            <b>CCN <i>CSE</i> HUB</b>
+            <small>LEARN · PRACTICE · ACHIEVE</small>
+          </span>
+        </a>
+
+        <p>
+          Independent student learning resource · Not an official university website.
+        </p>
+
         <span>© {new Date().getFullYear()} Emon Islam</span>
-      </footer>
+      </footer></>
 
       {active && (
-        <div className="modal-backdrop" onMouseDown={e => { if (e.target === e.currentTarget) setActive(null); }}>
+        <div
+          className="modal-backdrop"
+          onMouseDown={e => {
+            if (e.target === e.currentTarget) setActive(null);
+          }}
+        >
           <section className="answer-modal">
-            <button className="modal-close" onClick={() => setActive(null)} aria-label="Close"><X size={20} /></button>
+            <button
+              className="modal-close"
+              onClick={() => setActive(null)}
+              aria-label="Close"
+            >
+              <X size={20} />
+            </button>
+
             <div className="modal-kicker">
-              {active.batch || 'CSE'} <span>·</span> {active.subject} <span>·</span> Semester {active.semester}
+              {active.batch || 'CSE'} <span>·</span> {active.subject}
+              <span>·</span> Semester {active.semester}
             </div>
+
             <h2>{active.title}</h2>
+
             <div className="modal-meta">
-              <span>{active.questionType}</span><span>{active.examType}</span>
+              <span>{active.questionType}</span>
+              <span>{active.examType}</span>
               {active.courseCode && <span>{active.courseCode}</span>}
             </div>
 
             <div className="content-block">
-              <h4>QUESTION</h4><p className="preserve-text">{active.questionText}</p>
+              <h4>QUESTION</h4>
+              <p className="preserve-text">{active.questionText}</p>
             </div>
 
             <div className="answer-heading">
               <h4>SOLUTION</h4>
               <button onClick={() => setShowAnswer(v => !v)}>
-                {showAnswer ? <><EyeOff size={15} /> Hide</> : <><Eye size={15} /> Show</>}
+                {showAnswer
+                  ? <><EyeOff size={15} /> Hide</>
+                  : <><Eye size={15} /> Show</>}
               </button>
             </div>
 
             {showAnswer ? (
               <div className="solution-stack">
-                {active.answer && <div className="answer-content preserve-text">{active.answer}</div>}
+                {active.answer && (
+                  <div className="answer-content preserve-text">
+                    {active.answer}
+                  </div>
+                )}
 
                 {active.solutionSteps && active.solutionSteps.length > 0 && (
                   <div className="solution-steps">
                     <h4>STEP-BY-STEP SOLUTION</h4>
-                    <ol>{active.solutionSteps.map((step, i) => <li key={`${i}-${step}`}>{step}</li>)}</ol>
+                    <ol>
+                      {active.solutionSteps.map((step, i) => (
+                        <li key={`${i}-${step}`}>{step}</li>
+                      ))}
+                    </ol>
                   </div>
                 )}
 
                 {active.explanation && (
                   <div className="explanation-block">
-                    <h4>EXPLANATION</h4><p className="preserve-text">{active.explanation}</p>
+                    <h4>EXPLANATION</h4>
+                    <p className="preserve-text">{active.explanation}</p>
                   </div>
                 )}
 
                 {active.code && (
                   <div className="code-panel">
                     <div className="code-panel-head">
-                      <span><Terminal size={15} /> {(active.codeLanguage || 'code').toUpperCase()}</span>
+                      <span>
+                        <Terminal size={15} />
+                        {(active.codeLanguage || 'code').toUpperCase()}
+                      </span>
+
                       <button onClick={() => void copyCode(active.code || '')}>
-                        {copied ? <Check size={15} /> : <Copy size={15} />}
+                        {copied
+                          ? <Check size={15} />
+                          : <Copy size={15} />}
                         {copied ? 'Copied' : 'Copy code'}
                       </button>
                     </div>
+
                     <pre><code>{active.code}</code></pre>
                   </div>
                 )}
 
                 {(active.sampleInput || active.sampleOutput) && (
                   <div className="sample-grid">
-                    {active.sampleInput && <div><h4>SAMPLE INPUT</h4><pre>{active.sampleInput}</pre></div>}
-                    {active.sampleOutput && <div><h4>SAMPLE OUTPUT</h4><pre>{active.sampleOutput}</pre></div>}
+                    {active.sampleInput && (
+                      <div>
+                        <h4>SAMPLE INPUT</h4>
+                        <pre>{active.sampleInput}</pre>
+                      </div>
+                    )}
+                    {active.sampleOutput && (
+                      <div>
+                        <h4>SAMPLE OUTPUT</h4>
+                        <pre>{active.sampleOutput}</pre>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
-            ) : <div className="answer-hidden">Answer hidden for self-testing.</div>}
+            ) : (
+              <div className="answer-hidden">
+                Answer hidden for self-testing.
+              </div>
+            )}
 
-            {active.tags?.length > 0 && <div className="tag-row">{active.tags.map(t => <span key={t}>#{t}</span>)}</div>}
+            {active.tags?.length > 0 && (
+              <div className="tag-row">
+                {active.tags.map(t => <span key={t}>#{t}</span>)}
+              </div>
+            )}
           </section>
         </div>
       )}
 
       {adminOpen && (
-        <div className="modal-backdrop admin-backdrop" onMouseDown={e => { if (e.target === e.currentTarget) setAdminOpen(false); }}>
+        <div
+          className="modal-backdrop admin-backdrop"
+          onMouseDown={e => {
+            if (e.target === e.currentTarget) setAdminOpen(false);
+          }}
+        >
           <section className="admin-modal">
-            <button className="modal-close" onClick={() => setAdminOpen(false)} aria-label="Close"><X size={20} /></button>
+            <button
+              className="modal-close"
+              onClick={() => setAdminOpen(false)}
+              aria-label="Close"
+            >
+              <X size={20} />
+            </button>
 
             {!admin ? (
               <>
                 <div className="admin-icon"><ShieldCheck size={25} /></div>
                 <div className="eyebrow">RESTRICTED ACCESS</div>
                 <h2>Admin sign in</h2>
-                <p className="admin-intro">Manage questions and answers in the public library.</p>
+                <p className="admin-intro">
+                  Manage questions and answers in the public library.
+                </p>
+
                 <form onSubmit={login} className="admin-login">
-                  <label>Email address<input type="email" autoComplete="username" value={email} onChange={e => setEmail(e.target.value)} required placeholder="admin@example.com" /></label>
-                  <label>Password<input type="password" autoComplete="current-password" value={password} onChange={e => setPassword(e.target.value)} required placeholder="Your admin password" /></label>
+                  <label>
+                    Email address
+                    <input
+                      type="email"
+                      autoComplete="username"
+                      value={email}
+                      onChange={e => setEmail(e.target.value)}
+                      required
+                      placeholder="admin@example.com"
+                    />
+                  </label>
+
+                  <label>
+                    Password
+                    <input
+                      type="password"
+                      autoComplete="current-password"
+                      value={password}
+                      onChange={e => setPassword(e.target.value)}
+                      required
+                      placeholder="Your admin password"
+                    />
+                  </label>
+
                   {loginError && <p className="form-error">{loginError}</p>}
-                  <button className="primary-btn full-btn">Sign in securely <ArrowUpRight size={16} /></button>
+
+                  <button className="primary-btn full-btn">
+                    Sign in securely <ArrowUpRight size={16} />
+                  </button>
                 </form>
-                <p className="privacy-note"><ShieldCheck size={14} /> Credentials are verified by the server.</p>
+
+                <p className="privacy-note">
+                  <ShieldCheck size={14} />
+                  Credentials are verified by the server.
+                </p>
               </>
             ) : (
               <>
                 <div className="admin-title-row">
-                  <div><div className="eyebrow">CONTENT CONTROL</div><h2>Admin workspace</h2><p className="admin-intro">Create, edit, publish or remove questions.</p></div>
-                  <button className="secondary-btn logout-btn" onClick={() => void logout()}><LogOut size={15} /> Sign out</button>
+                  <div>
+                    <div className="eyebrow">CONTENT CONTROL</div>
+                    <h2>Admin workspace</h2>
+                    <p className="admin-intro">
+                      Create, edit, publish or remove questions.
+                    </p>
+                  </div>
+
+                  <button
+                    className="secondary-btn logout-btn"
+                    onClick={() => void logout()}
+                  >
+                    <LogOut size={15} /> Sign out
+                  </button>
                 </div>
 
                 <div className="admin-workspace">
                   <div className="admin-list">
                     <div className="admin-list-head">
                       <b>Questions ({adminQuestions.length})</b>
-                      <button className="mini-add" onClick={startNew}><Plus size={15} /> New</button>
+                      <button className="mini-add" onClick={startNew}>
+                        <Plus size={15} /> New
+                      </button>
                     </div>
+
                     {adminQuestions.map(q => (
-                      <div className={`admin-item ${editing === q._id ? 'selected' : ''}`} key={q._id}>
-                        <button className="admin-item-title" onClick={() => startEdit(q)}>
-                          <span>{q.title}</span><small>{q.published ? 'Published' : 'Draft'} · Sem {q.semester}</small>
+                      <div
+                        className={`admin-item ${editing === q._id ? 'selected' : ''}`}
+                        key={q._id}
+                      >
+                        <button
+                          className="admin-item-title"
+                          onClick={() => startEdit(q)}
+                        >
+                          <span>{q.title}</span>
+                          <small>
+                            {q.published ? 'Published' : 'Draft'} · Sem {q.semester}
+                          </small>
                         </button>
-                        <button className="icon-action" aria-label="Edit" onClick={() => startEdit(q)}><Pencil size={14} /></button>
-                        <button className="icon-action danger" aria-label="Delete" onClick={() => void deleteQuestion(q._id)}><Trash2 size={14} /></button>
+
+                        <button
+                          className="icon-action"
+                          aria-label="Edit"
+                          onClick={() => startEdit(q)}
+                        >
+                          <Pencil size={14} />
+                        </button>
+
+                        <button
+                          className="icon-action danger"
+                          aria-label="Delete"
+                          onClick={() => void deleteQuestion(q._id)}
+                        >
+                          <Trash2 size={14} />
+                        </button>
                       </div>
                     ))}
                   </div>
@@ -661,49 +1056,227 @@ export default function App() {
                   <form className="question-form" onSubmit={saveQuestion}>
                     <h3>{editing ? 'Edit question' : 'Add a question'}</h3>
 
-                    <label>Question title<input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required maxLength={300} placeholder="e.g. Explain binary search" /></label>
-                    <label>Question text<textarea value={form.questionText} onChange={e => setForm({ ...form, questionText: e.target.value })} required rows={3} placeholder="Write the full question..." /></label>
-                    <label>Text answer<textarea value={form.answer} onChange={e => setForm({ ...form, answer: e.target.value })} required rows={4} placeholder="Write the main answer..." /></label>
+                    <label>
+                      Question title
+                      <input
+                        value={form.title}
+                        onChange={e => setForm({ ...form, title: e.target.value })}
+                        required
+                        maxLength={300}
+                        placeholder="e.g. Explain binary search"
+                      />
+                    </label>
+
+                    <label>
+                      Question text
+                      <textarea
+                        value={form.questionText}
+                        onChange={e => setForm({ ...form, questionText: e.target.value })}
+                        required
+                        rows={3}
+                        placeholder="Write the full question..."
+                      />
+                    </label>
+
+                    <label>
+                      Text answer
+                      <textarea
+                        value={form.answer}
+                        onChange={e => setForm({ ...form, answer: e.target.value })}
+                        required
+                        rows={4}
+                        placeholder="Write the main answer..."
+                      />
+                    </label>
 
                     <div className="form-row">
-                      <label>Batch<input value={form.batch} onChange={e => setForm({ ...form, batch: e.target.value })} required placeholder="e.g. 18th Batch" /></label>
-                      <label>Semester<select value={form.semester} onChange={e => setForm({ ...form, semester: Number(e.target.value) })}>{semesters.map(s => <option key={s} value={s}>Semester {s}</option>)}</select></label>
+                      <label>
+                        Batch
+                        <input
+                          value={form.batch}
+                          onChange={e => setForm({ ...form, batch: e.target.value })}
+                          required
+                          placeholder="e.g. 18th Batch"
+                        />
+                      </label>
+
+                      <label>
+                        Semester
+                        <select
+                          value={form.semester}
+                          onChange={e => setForm({ ...form, semester: Number(e.target.value) })}
+                        >
+                          {semesters.map(s => (
+                            <option key={s} value={s}>Semester {s}</option>
+                          ))}
+                        </select>
+                      </label>
                     </div>
 
                     <div className="form-row">
-                      <label>Subject<input value={form.subject} onChange={e => setForm({ ...form, subject: e.target.value })} required placeholder="Verified subject name" /></label>
-                      <label>Course code<input value={form.courseCode} onChange={e => setForm({ ...form, courseCode: e.target.value })} placeholder="Optional course code" /></label>
+                      <label>
+                        Subject
+                        <input
+                          value={form.subject}
+                          onChange={e => setForm({ ...form, subject: e.target.value })}
+                          required
+                          placeholder="Verified subject name"
+                        />
+                      </label>
+
+                      <label>
+                        Course code
+                        <input
+                          value={form.courseCode}
+                          onChange={e => setForm({ ...form, courseCode: e.target.value })}
+                          placeholder="Optional course code"
+                        />
+                      </label>
                     </div>
 
                     <div className="form-row">
-                      <label>Question type<select value={form.questionType} onChange={e => setForm({ ...form, questionType: e.target.value })}>{questionTypes.map(k => <option key={k}>{k}</option>)}</select></label>
-                      <label>Exam type<select value={form.examType} onChange={e => setForm({ ...form, examType: e.target.value })}>{examTypes.map(k => <option key={k}>{k}</option>)}</select></label>
+                      <label>
+                        Question type
+                        <select
+                          value={form.questionType}
+                          onChange={e => setForm({ ...form, questionType: e.target.value })}
+                        >
+                          {questionTypes.map(k => <option key={k}>{k}</option>)}
+                        </select>
+                      </label>
+
+                      <label>
+                        Exam type
+                        <select
+                          value={form.examType}
+                          onChange={e => setForm({ ...form, examType: e.target.value })}
+                        >
+                          {examTypes.map(k => <option key={k}>{k}</option>)}
+                        </select>
+                      </label>
                     </div>
 
                     <div className="form-row">
-                      <label>Answer format<select value={form.answerType} onChange={e => setForm({ ...form, answerType: e.target.value })}>{[['text', 'Text'], ['code', 'Code'], ['math', 'Math'], ['mixed', 'Mixed']].map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select></label>
-                      <label>Programming language<select value={form.codeLanguage} onChange={e => setForm({ ...form, codeLanguage: e.target.value })}>{languages.map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select></label>
+                      <label>
+                        Answer format
+                        <select
+                          value={form.answerType}
+                          onChange={e => setForm({ ...form, answerType: e.target.value })}
+                        >
+                          {[
+                            ['text', 'Text'],
+                            ['code', 'Code'],
+                            ['math', 'Math'],
+                            ['mixed', 'Mixed']
+                          ].map(([v, l]) => (
+                            <option key={v} value={v}>{l}</option>
+                          ))}
+                        </select>
+                      </label>
+
+                      <label>
+                        Programming language
+                        <select
+                          value={form.codeLanguage}
+                          onChange={e => setForm({ ...form, codeLanguage: e.target.value })}
+                        >
+                          {languages.map(([v, l]) => (
+                            <option key={v} value={v}>{l}</option>
+                          ))}
+                        </select>
+                      </label>
                     </div>
 
-                    <label>Code<textarea className="code-input" value={form.code} onChange={e => setForm({ ...form, code: e.target.value })} rows={7} spellCheck={false} placeholder={'# Paste code here\nprint("Hello, CCN CSE HUB!")'} /></label>
-                    <label>Explanation<textarea value={form.explanation} onChange={e => setForm({ ...form, explanation: e.target.value })} rows={3} placeholder="Explain the logic or concept..." /></label>
+                    <label>
+                      Code
+                      <textarea
+                        className="code-input"
+                        value={form.code}
+                        onChange={e => setForm({ ...form, code: e.target.value })}
+                        rows={7}
+                        spellCheck={false}
+                        placeholder={'# Paste code here\nprint("Hello, CCN CSE HUB!")'}
+                      />
+                    </label>
+
+                    <label>
+                      Explanation
+                      <textarea
+                        value={form.explanation}
+                        onChange={e => setForm({ ...form, explanation: e.target.value })}
+                        rows={3}
+                        placeholder="Explain the logic or concept..."
+                      />
+                    </label>
 
                     <div className="form-row">
-                      <label>Sample input<textarea value={form.sampleInput} onChange={e => setForm({ ...form, sampleInput: e.target.value })} rows={3} /></label>
-                      <label>Sample output<textarea value={form.sampleOutput} onChange={e => setForm({ ...form, sampleOutput: e.target.value })} rows={3} /></label>
+                      <label>
+                        Sample input
+                        <textarea
+                          value={form.sampleInput}
+                          onChange={e => setForm({ ...form, sampleInput: e.target.value })}
+                          rows={3}
+                        />
+                      </label>
+
+                      <label>
+                        Sample output
+                        <textarea
+                          value={form.sampleOutput}
+                          onChange={e => setForm({ ...form, sampleOutput: e.target.value })}
+                          rows={3}
+                        />
+                      </label>
                     </div>
 
-                    <label>Solution steps <small>(one step per line)</small><textarea value={form.solutionSteps} onChange={e => setForm({ ...form, solutionSteps: e.target.value })} rows={4} placeholder={'Step 1: Identify the problem.\nStep 2: Apply the formula.\nStep 3: Write the result.'} /></label>
-                    <label>Tags <small>(comma separated)</small><input value={form.tags} onChange={e => setForm({ ...form, tags: e.target.value })} placeholder="algorithm, sorting, programming" /></label>
+                    <label>
+                      Solution steps <small>(one step per line)</small>
+                      <textarea
+                        value={form.solutionSteps}
+                        onChange={e => setForm({ ...form, solutionSteps: e.target.value })}
+                        rows={4}
+                        placeholder={'Step 1: Identify the problem.\nStep 2: Apply the formula.\nStep 3: Write the result.'}
+                      />
+                    </label>
+
+                    <label>
+                      Tags <small>(comma separated)</small>
+                      <input
+                        value={form.tags}
+                        onChange={e => setForm({ ...form, tags: e.target.value })}
+                        placeholder="algorithm, sorting, programming"
+                      />
+                    </label>
 
                     <label className="publish-toggle">
-                      <input type="checkbox" checked={Boolean(form.published)} onChange={e => setForm({ ...form, published: e.target.checked })} />
-                      <span><b>Publish to public library</b><small>Turn off to save as a private draft.</small></span>
+                      <input
+                        type="checkbox"
+                        checked={Boolean(form.published)}
+                        onChange={e => setForm({ ...form, published: e.target.checked })}
+                      />
+                      <span>
+                        <b>Publish to public library</b>
+                        <small>Turn off to save as a private draft.</small>
+                      </span>
                     </label>
 
                     <div className="form-actions">
-                      <button type="button" className="secondary-btn" onClick={startNew}>Clear form</button>
-                      <button className="primary-btn" disabled={saving}>{saving ? 'Saving…' : editing ? 'Save changes' : 'Save question'} <ArrowUpRight size={16} /></button>
+                      <button
+                        type="button"
+                        className="secondary-btn"
+                        onClick={startNew}
+                      >
+                        Clear form
+                      </button>
+
+                      <button className="primary-btn" disabled={saving}>
+                        {saving
+                          ? 'Saving…'
+                          : editing
+                            ? 'Save changes'
+                            : 'Save question'}
+                        <ArrowUpRight size={16} />
+                      </button>
                     </div>
                   </form>
                 </div>
